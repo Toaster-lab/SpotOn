@@ -1,0 +1,51 @@
+1. Nat Med. 2020 Oct;26(10):1644-1653. doi: 10.1038/s41591-020-1040-z. Epub 2020 
+Sep 14.
+
+Single-cell transcriptomic atlas of the human endometrium during the menstrual 
+cycle.
+
+Wang W(#)(1), Vilella F(#)(2)(3), Alama P(4), Moreno I(2)(3), Mignardi M(5), 
+Isakova A(1), Pan W(1), Simon C(6)(7)(8), Quake SR(9)(10)(11).
+
+Author information:
+(1)Department of Bioengineering, Stanford University, Stanford, CA, USA.
+(2)Department of Obstetrics & Gynecology, Stanford University, Stanford, CA, 
+USA.
+(3)Igenomix Foundation, INCLIVA Health Research Institute, Valencia, Spain.
+(4)IVI Valencia, Valencia, Spain.
+(5)Chan Zuckerberg Biohub, San Francisco, CA, USA.
+(6)Department of Obstetrics & Gynecology, Stanford University, Stanford, CA, 
+USA. carlos.simon@uv.es.
+(7)Igenomix Foundation, INCLIVA Health Research Institute, Valencia, Spain. 
+carlos.simon@uv.es.
+(8)Department of Obstetrics & Gynecology, University of Valencia, Valencia, 
+Spain. carlos.simon@uv.es.
+(9)Department of Bioengineering, Stanford University, Stanford, CA, USA. 
+steve@quake-lab.org.
+(10)Chan Zuckerberg Biohub, San Francisco, CA, USA. steve@quake-lab.org.
+(11)Department of Applied Physics, Stanford University, Stanford, CA, USA. 
+steve@quake-lab.org.
+(#)Contributed equally
+
+Comment in
+    Nat Med. 2020 Oct;26(10):1513-1514. doi: 10.1038/s41591-020-1075-1.
+
+In a human menstrual cycle the endometrium undergoes remodeling, shedding and 
+regeneration, all of which are driven by substantial gene expression changes in 
+the underlying cellular hierarchy. Despite its importance in human fertility and 
+regenerative biology, our understanding of this unique type of tissue 
+homeostasis remains rudimentary. We characterized the transcriptomic 
+transformation of human endometrium at single-cell resolution across the 
+menstrual cycle, resolving cellular heterogeneity in multiple dimensions. We 
+profiled the behavior of seven endometrial cell types, including a previously 
+uncharacterized ciliated cell type, during four major phases of endometrial 
+transformation, and found characteristic signatures for each cell type and 
+phase. We discovered that the human window of implantation opens with an abrupt 
+and discontinuous transcriptomic activation in the epithelia, accompanied with a 
+widespread decidualization feature in the stromal fibroblasts. Our study 
+provides a high-resolution molecular and cellular characterization of human 
+endometrial transformation across the menstrual cycle, providing insights into 
+this essential physiological process.
+
+DOI: 10.1038/s41591-020-1040-z
+PMID: 32929266 [Indexed for MEDLINE]
