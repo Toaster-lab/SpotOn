@@ -5,7 +5,7 @@
 </script>
 
 <div class="container">
-    <div class="grid">
+    <div class="dashboard-content">
         <div class="widgets-container">
             <Calendar />
             <Chart />
@@ -16,21 +16,42 @@
 
 <style>
     .container {
-        height: 100%;
-        width: 100%;
+        min-width: 0;
+        min-height: calc(100vh - 72px);
+        overflow: hidden;
+        border-top-left-radius: 28px;
+        background-color: var(--color-background);
     }
 
-    .grid {
-        height: 100vh;
-        width: 100%;
+    .dashboard-content {
+        min-width: 0;
+        min-height: calc(100vh - 72px);
         display: grid;
-        grid-template-columns: 3fr 1fr;
-        grid-template-rows: 1fr;
-        grid-template-areas: widgets risk-report;
+        grid-template-columns: minmax(0, 3fr) minmax(260px, 1fr);
+        padding: 24px;
+        gap: 24px;
     }
 
     .widgets-container {
-        height: 100%;
-        grid-area: "widgets";
+        min-width: 0;
+        display: grid;
+        grid-template-rows: auto minmax(240px, 1fr);
+        gap: 24px;
+    }
+
+    @media (max-width: 600px) {
+        .container {
+            border-top-left-radius: 20px;
+        }
+
+        .widgets-container {
+            gap: 16px;
+        }
+
+        .dashboard-content {
+            grid-template-columns: minmax(0, 1fr);
+            padding: 16px;
+            gap: 16px;
+        }
     }
 </style>

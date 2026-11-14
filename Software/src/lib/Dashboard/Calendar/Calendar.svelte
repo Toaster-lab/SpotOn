@@ -5,7 +5,11 @@
 
 <style>
     .container {
-        height: 40px;
+        min-height: 120px;
         width: 100%;
+        min-width: 0;
+        background-color: var(--color-surface);
+        padding: 24px;
+        border-radius: 20px;
     }
 </style>
