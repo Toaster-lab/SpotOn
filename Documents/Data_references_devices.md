@@ -106,7 +106,7 @@ mcPHASES gives daily hormone-based cycle phases plus wearable heart and temperat
 
 Limitations: urine metabolites rather than blood levels; Mira's proprietary phase labels; young participants; firmware changes between intervals; no blood omics.
 
-Access: register on [PhysioNet](https://physionet.org/content/mcphases/1.0.0/) and sign the data use agreement. The PhysioNet page recently said files were no longer downloadable — check. Code: [github.com/chai-toronto/mcphases](https://github.com/chai-toronto/mcphases).
+Access: register on [PhysioNet](https://physionet.org/content/mcphases/1.0.0/) and sign the data use agreement. The PhysioNet page recently said files were no longer downloadable — check. Code: [github.com/chai-toronto/mcphases](https://github.com/chai-toronto/mcphases), which includes a worked [example notebook](https://github.com/chai-toronto/mcphases/blob/main/mcphases_sample_analysis.ipynb) for loading the dataset and joining its physiological, hormonal and self-reported measures. Start there rather than from the file layout: it shows how the authors intend the modalities to be aligned, which is the part that would otherwise take a day to reverse-engineer.
 
 ### Related literature
 
@@ -210,6 +210,16 @@ The pitch: learn the menstrual cycle on Earth, freeze it, map each astronaut ont
 4. **On-the-spot results for deep space.** MenstruAI-style strips read by the crew's camera and an app; no lab needed.
 5. **Full stack for every female astronaut.** Mira urine for all, including confirming suppression (flat LH and PdG); wearables; smart pad or cup for those who menstruate; plasma proteomics.
 6. **Menstrual biobank in orbit.** Stable dried spots for later methylation, proteomics or RNA; not done over time even on Earth.
+
+### Proposed measurement stack
+
+**Daily in flight: urine, not blood.** Mira measures LH, E3G, PdG and FSH from urine in 16 minutes with no needle, no centrifuge and no cold chain, which is why it is the in-flight ground truth. A serum panel would require venepuncture and plasma separation — a step never performed in orbit — for a measurement urine already supplies: urinary E3G correlates with serum oestradiol (Nakhuda et al. 2023), and mcPHASES validated its hormone-derived phase labels against the same wearable signals this project uses, so the hormonal and physiological layers are already calibrated against each other on Earth. Urine also covers the whole crew rather than part of it: in astronauts suppressing menses, flat LH and PdG confirm the suppression is holding, which no menstrual sample can do.
+
+**Ground phase: serum.** Serum E2, P4, LH and FSH are measured pre- and post-flight, where venepuncture is available, to validate the urine proxy per person rather than relying on a population-level correlation. Each astronaut carries her own urine-to-serum calibration into flight.
+
+**Monthly in flight: menstrual effluent, sequenced for DNA methylation.** Effluent is a cellular sample, not a cell-free one — Schwalie reports a median 5 mL yielding a median 2.6 million live cells per mL, so roughly 13 million cells per collection. That is micrograms of nucleic acid rather than the nanograms recoverable from plasma, and it removes the input-mass constraint that makes cell-free assays marginal in flight. DNA is the right molecule for the same reasons set out under Assay selection: it tolerates delay, imposes no RNase-free discipline in a closed cabin, and nanopore calls 5mC natively during basecalling with no bisulfite step. Vlasac et al. have already shown that mail-in menstrual-effluent kits preserved in DNA/RNA Shield at ambient temperature support methylation analysis. The readout is therefore the methylation state and cell composition of the endometrium itself — effectively a monthly endometrial biopsy obtained without a biopsy. RNA is deferred to a second phase.
+
+**Reference, and a gap in it.** HECA and Wang et al. define the endometrial cell types and their trajectory across the cycle in expression space, and are the reference for the ground-phase single-cell work on GSE203191 and Schwalie, and for deciding which cell types the flight assay must resolve. They cannot serve directly as the reference for methylation deconvolution, because no comparable endometrial methylation atlas exists: the Loyfer atlas and HiTIMED cover blood cell types, while endometrial epithelium and stroma are not represented. Constructing that reference — matched methylation profiles for the cell types HECA defines — is a phase-1 deliverable in its own right, and is reusable well beyond spaceflight.
 
 ## Hackathon demo plan
 
