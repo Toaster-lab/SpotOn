@@ -1,33 +1,32 @@
 # SpotOn
--tagline
--demo images and stuff
+We prevent fuck ups!
 
 ## The problem
-What problem are we actually solving? Target group?
-* Suppressing your period has serious side effect
-* Pills run out and expire!
-* Your menstrual cycle is a real health indicator 
 
 ## Our solution
-We take our knowledge from Earth and take it into space. We learn your unique body and make a risk assessment! 
+We take our knowledge from Earth and take it into space. We learn your unique body's baseline, study your menstrual blood and make a risk assessment! 
 
-## Demo
-Demo video, maybe link to web-app
-
-## How to use it
-Link to documentation
+## Future vision
+How our project could look with more time and our full vision
+ 
+## How to use the webapp
+See: [Webapp documentation](./Software/README.md) 
 
 ## How we made it
 General overview of the process
 
-## Model limitations
-What our model struggles with or kinda how it works -> weaknesses
 
 ## AI DISCLOSURE
-How we use AI and what it did for us?
+* Assisting with Webapp - not designing it
+* Finding research papers and data - but understanding it ourselves
+* Helping with presentation design - not writing the text for us
 
-## Future vision
-How our project could look with more time and our full vision
+Written text is made by us!
 
 ## Our team
-Collaborators and their job
+```
+* Katarzyna Wręczycka - Data / AI                @katwre
+* Kiran Ermatinger    - Full stack developer     @kiran-ermatinger
+* Thorben Che Koch    - Entrepreneurship / AI    @Toaster-lab
+* Weronika Boguś      - Biochemist               @lifeinspace-wb
+```
