@@ -1,29 +1,34 @@
 <script lang="ts">
-    let { createEntryOpen = $bindable(false) }: { createEntryOpen?: boolean } = $props();
+    // Feature for potential future use
+    // let { createEntryOpen = $bindable(false) }: { createEntryOpen?: boolean } = $props();
     import { onMount } from "svelte";
     import ExportData from "./Entries/ExportData.svelte";
-    import UploadData from "./Entries/UploadData.svelte";
-    import CreateEntry from "./Entries/CreateEntry.svelte";
+    // Feature for potential future use
+    // import UploadData from "./Entries/UploadData.svelte";
+    // import CreateEntry from "./Entries/CreateEntry.svelte";
     import { entries, loadEntries } from "./Entries/entries";
     let storageError = $state(false);
     let savedMessage = $state("");
     onMount(() => {
         try { loadEntries(); } catch { storageError = true; }
     });
+    /* Feature for potential future use
     function entrySaved() {
         createEntryOpen = false;
         savedMessage = "Entry saved on this device.";
     }
+    */
 
     // additional feature for later use
     // import RecentActivity from "./RecentActivity/RecentActivity.svelte";
     import type { RecentActivityItem } from "./RecentActivity/activityData";
     import Window from "./Window/Window.svelte";
     import NavigationButton from "./Button/NavigationButton.svelte";
-    import { Plus, DatabasePlus, Download } from "@lucide/svelte";
+    // Feature for potential future use: Plus, DatabasePlus
+    import { Download } from "@lucide/svelte";
 
     let windowOpen = $state(false);
-    let windowTitle = $state("Create Entry");
+    let windowTitle = $state("Export Data");
 
     let selectedActivity = $state<RecentActivityItem | null>(null);
 
@@ -45,8 +50,10 @@
 
 <div class="container">
     <div class="list">
+        <!-- Feature for potential future use
         <NavigationButton title="Create Entry" icon={Plus} onClick={() => { savedMessage = ""; createEntryOpen = true; }} />
         <NavigationButton title="Upload Data" icon={DatabasePlus} onClick={() => openWindow("Upload Data")} />
+        -->
         <NavigationButton title="Export Data" icon={Download} onClick={() => openWindow("Export Data")} />
     </div>
     {#if savedMessage}<p role="status">{savedMessage}</p>{/if}
@@ -55,6 +62,7 @@
     -->
 </div>
 
+<!-- Feature for potential future use
 <Window bind:open={createEntryOpen} title="Create Entry">
     {#if createEntryOpen}
         {#if storageError}
@@ -64,15 +72,19 @@
         {/if}
     {/if}
 </Window>
+-->
 
 <Window bind:open={windowOpen} title={windowTitle}>
+    <!-- Feature for potential future use
     {#if windowTitle === "Upload Data" && windowOpen}
         {#if storageError}
             <p role="alert">Saved entries could not be loaded. Please check browser storage and reload before importing.</p>
         {:else}
             <UploadData onImported={(count) => { windowOpen = false; savedMessage = ""; window.alert(`${count} ${count === 1 ? "entry" : "entries"} imported successfully.`); }} />
         {/if}
-    {:else if windowTitle === "Export Data" && windowOpen}
+    {/if}
+    -->
+    {#if windowTitle === "Export Data" && windowOpen}
         {#if storageError}
             <p role="alert">Saved entries could not be loaded. Please reload before exporting.</p>
         {:else}

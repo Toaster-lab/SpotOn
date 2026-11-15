@@ -3,8 +3,10 @@
     import type { Entry } from "./entries";
     import EditableCell from "./EditableCell.svelte";
     import Window from "../Window/Window.svelte";
-    import { ArrowUp, ArrowDown, ArrowUpDown, Plus, Trash2, Download } from "@lucide/svelte";
-    let { onCreateEntry }: { onCreateEntry: () => void } = $props();
+    import { ArrowUp, ArrowDown, ArrowUpDown, Trash2, Download } from "@lucide/svelte";
+    // Feature for potential future use
+    // let { onCreateEntry }: { onCreateEntry: () => void } = $props();
+    // import { Plus } from "@lucide/svelte";
     import { entries, deleteEntries } from "./entries";
     import { entryColumns, filterAndSortEntries } from "./entryTable";
     let exportOpen = $state(false);
@@ -57,7 +59,9 @@
             <label for={`${id}-search`}>Search entries</label>
             <input id={`${id}-search`} type="search" placeholder="Search dates, readings or notes…" bind:value={query} oninput={() => { selectedIds = []; error = ""; message = ""; }} />
         </div>
+        <!-- Feature for potential future use
         <button type="button" class="create-entry" onclick={onCreateEntry}><Plus size={20} aria-hidden="true" />Create Entry</button>
+        -->
     </div>
     {#if selectedRows.length}
         <div class="selection-actions">
@@ -100,7 +104,7 @@
                         {/each}
                     </tr>
                 {:else}
-                    <tr><td colspan={entryColumns.length + 1} class="empty">{$entries.length ? "No entries match your search." : "No entries yet. Choose Create Entry to add your first reading or note."}</td></tr>
+                    <tr><td colspan={entryColumns.length + 1} class="empty">{$entries.length ? "No entries match your search." : "No entries yet."}</td></tr>
                 {/each}
             </tbody>
         </table>
@@ -144,7 +148,9 @@
     .sort-arrow { display: flex; flex-shrink: 0; color: var(--color-primary); }
     .toolbar { display: flex; align-items: flex-end; gap: 12px; }
     .search-field { flex: 1; min-width: 0; }
+    /* Feature for potential future use
     .create-entry { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 12px 16px; border: 0; background: var(--color-primary); color: var(--color-surface); font: inherit; white-space: nowrap; cursor: pointer; }
+    */
     @media (max-width: 440px) { .toolbar { flex-wrap: wrap; } .search-field { flex-basis: 100%; } }
     .notes { min-width: 180px; max-width: 340px; white-space: pre-wrap; overflow-wrap: anywhere; }
     .date { white-space: nowrap; }

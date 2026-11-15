@@ -51,7 +51,7 @@
         <option value="pdf">PDF · readable report</option>
     </select>
     {#if !fieldIds.length}<p class="hint">Choose at least one field to export.</p>{/if}
-    {#if !selectedEntries.length}<p class="hint">Create or upload an entry first.</p>{/if}
+    {#if !selectedEntries.length}<p class="hint">No entries available to export.</p>{/if}
     <button type="submit" disabled={busy || !selectedEntries.length || !fieldIds.length}><Download size={18} aria-hidden="true" />{busy ? "Preparing…" : `Export ${format.toUpperCase()}`}</button>
     {#if error}<p class="error" role="alert">{error}</p>{/if}
     {#if message}<p class="hint" role="status">{message}</p>{/if}

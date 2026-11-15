@@ -5,20 +5,23 @@
   import TabWindow from "./lib/Window/TabWindow.svelte";
   import MainWindow from "./lib/MainWindow.svelte";
 
-  let createEntryOpen = $state(false);
+  // Feature for potential future use
+  // let createEntryOpen = $state(false);
   let activeTab = $state<"main" | "second">("main");
 </script>
 
 <div id="app-container">
   <Topbar bind:activeTab />
   <div id="layout-grid">
-    <SideNavigation bind:createEntryOpen />
+    <!-- Feature for potential future use: <SideNavigation bind:createEntryOpen /> -->
+    <SideNavigation />
     <div class="tab-panels">
       <div id="panel-main" role="tabpanel" aria-labelledby="tab-main" hidden={activeTab !== "main"} tabindex="0">
         <MainWindow />
       </div>
       <div id="panel-second" role="tabpanel" aria-labelledby="tab-second" hidden={activeTab !== "second"} tabindex="0">
-        <TabWindow title=""><EntriesTable onCreateEntry={() => { createEntryOpen = true; }} /></TabWindow>
+        <!-- Feature for potential future use: <EntriesTable onCreateEntry={() => { createEntryOpen = true; }} /> -->
+        <TabWindow title=""><EntriesTable /></TabWindow>
       </div>
     </div>
   </div>
