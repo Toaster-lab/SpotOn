@@ -99,7 +99,7 @@ This is the whole reason the architecture works at our sample size: 313,000 refe
 
 Otherwise it learns the lab, not the biology.
 
-- **Collection device** — DIVA cup [6], Mooncup and LadyCup [7], tampon, swab. Cups recover mostly immune cells; swabs mostly epithelial and stromal [15]. The device changes composition directly.
+- **Collection device** — DIVA cup [6], Mooncup and LadyCup [7], tampon such as nextgen jane [21], swab. Cups recover mostly immune cells; swabs mostly epithelial and stromal [15]. The device changes composition directly.
 - **Processing** — Shih methanol-fixed before 10x [6]; Schwalie's healthy cohort serially filtered and processed fresh, while its endometriosis cohort used a Histopaque density gradient [7]. Within that one study, device and protocol are confounded with cohort.
 - **Chemistry and donor** — 10x 3′ v2.0 [7] versus v3.1 [6], and donor identity. Cells from one woman are not independent observations.
 - **Culture** — cultured menstrual-fluid cells are preponderantly stromal and transcriptionally distinct from fresh ones; the CD45⁺ fraction typically fails to attach [7]. Only fresh samples represent the immune compartment.
@@ -244,3 +244,4 @@ Everything in phase 1 uses data we can download tonight. Nothing waits on an app
 18. Velten B, Braunger JM, Argelaguet R, et al. Identifying temporal and spatial patterns of variation from multimodal data using MEFISTO. *Nature Methods* 2022;19:179–86.
 19. Wang Y, Li C. FemWear: A Parameter-Efficient Wearable Foundation Model for Women's Health. arXiv:2608.08244.
 20. Inspiration4 data access through the NASA Open Science Data Repository. *npj Microgravity* 2024. doi:10.1038/s41526-024-00393-5
+21. https://orwh.od.nih.gov/sites/nih_site/files/docs/09-Tariyal_508c.pdf
