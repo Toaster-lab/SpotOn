@@ -2,20 +2,18 @@
 We prevent fuck ups!
 
 ## The problem
-Female astronauts are taking pills to switch off their menstruations [1]. This raises the risk of blood cloths [3] and expire on longer space missions [2]. By switching of their periods, they miss a monthly health signal from their body which prevents them to detect diseases early.
+Female astronauts are taking pills to switch off their menstruations. This raises the risk of blood cloths and expire on longer space missions. By switching of their periods, they miss a monthly health signal from their body which prevents them to detect diseases early.
 
 ## Our solution
 We take our knowledge from Earth and take it into space. We learn your unique body's baseline, study your menstrual blood and make a risk assessment! 
 
 ## Future vision
-How our project could look with more time and our full vision
- 
+* Fill in the gap of women's menstrual cycle.
+* Focus on improving healthcare for women
+* Translating molecular and physiological into meaningful insights!!
+
 ## How to use the webapp
 See: [Webapp documentation](./Software/README.md) 
-
-## How we made it
-General overview of the process
-
 
 ## AI DISCLOSURE
 * Assisting with Webapp - not designing it
