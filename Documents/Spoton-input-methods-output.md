@@ -11,16 +11,18 @@ NASA Space Apps · Lucerne 2026 · github.com/Toaster-lab/SpotOn
 
 ## Input
 
-**Four open human datasets, 111 women, downloadable today without an application.**
+**Two open menstrual-blood single-cell datasets, downloadable today without an application.**
 
-- Two menstrual-blood single-cell datasets — what a menstrual cup actually collects (Shih 2022, 33 women; Schwalie 2024, 15 healthy donors with repeat sampling).
-- Two endometrial reference atlases — what the cell types are and how they change across the cycle (HECA, 63 women; Wang 2020).
+- Shih 2022 — 33 participants, self-collected at home with a cup.
+- Schwalie 2024 — 15 healthy donors, **with repeat sampling across cycles**, which is what makes the noise floor measurable.
+
+Both are menstrual fluid: the sample type we would actually collect in flight. We deliberately do not pool endometrial biopsy atlases into the reference — a cup sample is ~83% immune cells, a biopsy is epithelial and stromal, and pooling would shape the model around a tissue we will never sample.
 
 In flight, the input is one self-collected menstrual cup sample per cycle, sequenced on board.
 
 ## Methods
 
-1. **Integrate** the four datasets into one latent space with a variational autoencoder, declaring collection device, fixation, chemistry and donor as batch variables.
+1. **Integrate** the menstrual-blood datasets into one latent space with a variational autoencoder, declaring collection device, fixation, chemistry and donor as batch variables.
 2. **Freeze** that reference. Every later sample is mapped onto it rather than retrained with it.
 3. **Measure the noise floor** — how much a healthy woman's menstrual transcriptome changes between her own cycles. This comes from Schwalie's repeat donors and, as far as we can establish, has never been quantified.
 4. **Adapt per astronaut** — each new in-flight sample trains a small set of new weights on the frozen reference and updates her personal baseline.
@@ -40,14 +42,14 @@ Not a diagnosis. Not a yes/no. A graded risk signal a flight surgeon can act on,
 
 ## 1. Input data
 
-### 1.1 Reference atlases — cell-type identity and cycle phase
+Menstrual blood data (for building the reference dataset)
+Shih et al. BMC Medicine 2022; 9 healthy females - cell free scRNA-seq; https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE203191
+Schwalie et al. eLife Reviewed Preprint 2024; 9 healthy females - cell free bulk and single-cell RNA-seq; https://zenodo.org/records/11105267
 
-| Dataset | Scale | Role | Access |
-| --- | --- | --- | --- |
-| **HECA** — Marečková et al., *Nature Genetics* 2024 | 313,527 cells · 63 individuals | Defines endometrial cell types; integrates six public datasets | CC-BY · [paper](https://pubmed.ncbi.nlm.nih.gov/39198675/) |
-| **Wang et al.**, *Nature Medicine* 2020 | Single-cell endometrium, staged | Cycle-phase labels and trajectories | [GEO GSE111976](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE111976) |
+Spaceflight plasma data (for defining a detectability threshold)
+JAXA Cell-Free Epigenome; 2 healthy females - cell free RNA; https://osdr.nasa.gov/bio/repo/data/studies/OSD-530
+Inspiration4; 2 healthy females - cell free RNA; https://osdr.nasa.gov/bio/repo/data/studies/OSD-575
 
-> **Note on counting.** HECA already integrates Wang (GSE111976) among its six constituent datasets, so these are not additive. HECA's 63 donors is the correct atlas figure. HECA also has a companion single-nucleus dataset (312,246 nuclei, 63 donors, five overlapping) — we use the scRNA-seq side.
 
 ### 1.2 Menstrual blood — what a cup actually yields
 
@@ -107,14 +109,14 @@ Declared as covariates, because otherwise the model learns the lab rather than t
 - **Donor identity** — cells from one woman are not independent observations.
 - **Culture status** — cultured menstrual-fluid cells are preponderantly stromal; the CD45⁺ fraction typically fails to attach. Only fresh samples represent the immune compartment.
 
-Flow-through is dominated by CD45⁺ cells (median ~83% in Schwalie), which is why an atlas alone is not a sufficient reference.
+Flow-through is dominated by CD45⁺ cells (median ~83% in Schwalie), which is why an endometrial biopsy atlas is not a sufficient reference for this sample type.
 
 ### 2.3 Integration and reference construction
 
 | Step | Method | Citation |
 | --- | --- | --- |
 | Latent space | **scVI** — variational autoencoder, NB likelihood, batch modelled explicitly | Lopez et al., *Nature Methods* 2018;15:1053–8 |
-| Label transfer | **scANVI** — semi-supervised; HECA annotations propagate to unlabelled cup data | Xu et al., *Mol Syst Biol* 2021;17:e9620 |
+| Label transfer | **scANVI** — semi-supervised; published Shih / Schwalie annotations propagate to unlabelled cells | Xu et al., *Mol Syst Biol* 2021;17:e9620 |
 | Query mapping | **scArches** — architectural surgery: reference weights frozen, new condition-specific weights trained on the query | Lotfollahi et al., *Nature Biotechnology* 2022;40:121–30 |
 
 **Why frozen-reference mapping and not a retrain.** 350,000+ reference cells against two astronauts. Any method that retrains on the pooled data is dominated by the reference and changes every time new data arrives, so results stop being comparable across months. scArches trains only a small set of new weights per batch — minutes per astronaut, nothing to overfit, and the Earth half physically cannot shift. Once enough flight samples accumulate, the reference is rebuilt as a new **dated version**, so nothing already measured changes silently.
@@ -138,7 +140,7 @@ Schwalie et al. established that the signature is stable — same-donor samples 
 
 No sorting, no cold chain, no 10x controller. In-flight nanopore on menstrual effluent is **bulk**, so the pipeline splits into two different algorithms:
 
-- **Earth / reference side** — scVI + scANVI + scArches on HECA, Shih, Schwalie. Builds and validates the latent space, fixes cell-type definitions, measures the noise floor.
+- **Earth / reference side** — scVI + scANVI + scArches on Shih and Schwalie. Builds and validates the latent space, fixes cell-type definitions, measures the noise floor.
 - **Flight / query side** — bulk nanopore sequencing on a MinION (see §1.5 — the device has flown and has already sequenced native RNA on the ISS), then deconvolution against a signature derived from that same reference: **MuSiC** (Wang et al., *Nat Commun* 2019;10:380) or **BayesPrism** (Chu et al., *Nature Cancer* 2022;3:505–17). Output is cell-type composition per sample.
 
 **One honest consequence of the split.** Earth reference data is Illumina short-read; the flight assay is nanopore long-read. That platform difference is itself a batch effect, so part of any Earth-vs-flight difference would be the machine, not the biology. Two mitigations, both already in the design: each astronaut is compared primarily against *her own* earlier nanopore samples, same device, so the platform term cancels; and a bridging set of Earth samples run on nanopore would calibrate the cross-platform offset directly.
@@ -191,7 +193,7 @@ Computed on board. No downlink required, which matters for Mars-distance latency
 ### 3.2 From phase 0, regardless of whether anyone flies
 
 - **The noise floor**: the first quantitative distribution of cycle-to-cycle variation in the menstrual transcriptome, as a reusable number rather than a heatmap.
-- **A frozen, versioned reference** combining atlas-derived cell identity with cup-realistic composition.
+- **A frozen, versioned reference** built on the sample type that will actually be collected, with cup-realistic cell composition rather than biopsy composition.
 - **A deconvolution signature** for bulk menstrual effluent, usable by anyone with a bulk assay and no single-cell facility.
 
 ### 3.3 Deliberately not claimed
@@ -204,20 +206,18 @@ Computed on board. No downlink required, which matters for Mars-distance latency
 
 ## References
 
-1. Marečková M, et al. An integrated single-cell reference atlas of the human endometrium (HECA). *Nature Genetics* 2024. https://pubmed.ncbi.nlm.nih.gov/39198675/
-2. Wang W, Vilella F, Alama P, et al. Single-cell transcriptomic atlas of the human endometrium during the menstrual cycle. *Nature Medicine* 2020;26:1644–53. GEO GSE111976
-3. Shih AJ, Adelson RP, Vashistha H, et al. Single-cell analysis of menstrual endometrial tissues defines phenotypes associated with endometriosis. *BMC Medicine* 2022;20:315. GEO GSE203191
-4. Schwalie PC, Bafligil C, Russeil J, et al. Single-cell characterization of menstrual fluid at homeostasis and in endometriosis. *eLife Reviewed Preprint* 2024. doi:10.7554/eLife.99558.1 · medRxiv 2024.05.06.24306766 · data Zenodo 10.5281/zenodo.11105267
-5. Lopez R, Regier J, Cole MB, Jordan MI, Yosef N. Deep generative modeling for single-cell transcriptomics (scVI). *Nature Methods* 2018;15:1053–8.
-6. Xu C, Lopez R, Mehlman E, et al. Probabilistic harmonization and annotation of single-cell transcriptomics data with deep generative models (scANVI). *Molecular Systems Biology* 2021;17:e9620.
-7. Lotfollahi M, Naghipourfar M, Luecken MD, et al. Mapping single-cell data to reference atlases by transfer learning (scArches). *Nature Biotechnology* 2022;40:121–30.
-8. Wang X, Park J, Susztak K, Zhang NR, Li M. Bulk tissue cell type deconvolution with multi-subject single-cell expression reference (MuSiC). *Nature Communications* 2019;10:380.
-9. Chu T, Wang Z, Pe'er D, Danko CG. Cell type and gene expression deconvolution with BayesPrism. *Nature Cancer* 2022;3:505–17.
-10. Vlasac IM, et al. Menstrual effluent methylation cytometry across collection devices. *Epigenetics* 2025. GEO GSE275888
-11. Strock N, Rivas E, Marshall Goebel K. *The Effects of Space Flight and Microgravity Exposure on Female Astronaut Health and Performance.* KBR / NASA Johnson Space Center.
-12. Jain V, Wotring VE. Medically induced amenorrhea in female astronauts. *npj Microgravity* 2016;2:16008.
-13. JAXA Cell-Free Epigenome study, NASA OSDR OSD-530 · *Nature Communications* 2023, doi:10.1038/s41467-023-41995-z
-14. Inspiration4 data access through the NASA Open Science Data Repository. *npj Microgravity* 2024. doi:10.1038/s41526-024-00393-5
-15. Lin G, Li JY, Kalani K, Truong KN, Mariakakis A. A longitudinal dataset of physiological, hormonal, metabolic, and self-reported menstrual health data (mcPHASES). *Scientific Data* 2026;13(1):411.
-16. Castro-Wallace SL, Chiu CY, John KK, et al. Nanopore DNA sequencing and genome assembly on the International Space Station. *Scientific Reports* 2017;7(1):18022. doi:10.1038/s41598-017-18364-0
-17. Oxford Nanopore Technologies / UC Santa Cruz. *International Space Station update: direct RNA sequencing in space.* August 2018. https://nanoporetech.com/news/news-international-space-station-update-direct-rna-sequencing-space — press announcement, not peer-reviewed.
+1. Shih AJ, Adelson RP, Vashistha H, et al. Single-cell analysis of menstrual endometrial tissues defines phenotypes associated with endometriosis. *BMC Medicine* 2022;20:315. GEO GSE203191
+2. Schwalie PC, Bafligil C, Russeil J, et al. Single-cell characterization of menstrual fluid at homeostasis and in endometriosis. *eLife Reviewed Preprint* 2024. doi:10.7554/eLife.99558.1 · medRxiv 2024.05.06.24306766 · data Zenodo 10.5281/zenodo.11105267
+3. Lopez R, Regier J, Cole MB, Jordan MI, Yosef N. Deep generative modeling for single-cell transcriptomics (scVI). *Nature Methods* 2018;15:1053–8.
+4. Xu C, Lopez R, Mehlman E, et al. Probabilistic harmonization and annotation of single-cell transcriptomics data with deep generative models (scANVI). *Molecular Systems Biology* 2021;17:e9620.
+5. Lotfollahi M, Naghipourfar M, Luecken MD, et al. Mapping single-cell data to reference atlases by transfer learning (scArches). *Nature Biotechnology* 2022;40:121–30.
+6. Wang X, Park J, Susztak K, Zhang NR, Li M. Bulk tissue cell type deconvolution with multi-subject single-cell expression reference (MuSiC). *Nature Communications* 2019;10:380.
+7. Chu T, Wang Z, Pe'er D, Danko CG. Cell type and gene expression deconvolution with BayesPrism. *Nature Cancer* 2022;3:505–17.
+8. Vlasac IM, et al. Menstrual effluent methylation cytometry across collection devices. *Epigenetics* 2025. GEO GSE275888
+9. Strock N, Rivas E, Marshall Goebel K. *The Effects of Space Flight and Microgravity Exposure on Female Astronaut Health and Performance.* KBR / NASA Johnson Space Center.
+10. Jain V, Wotring VE. Medically induced amenorrhea in female astronauts. *npj Microgravity* 2016;2:16008.
+11. JAXA Cell-Free Epigenome study, NASA OSDR OSD-530 · *Nature Communications* 2023, doi:10.1038/s41467-023-41995-z
+12. Inspiration4 data access through the NASA Open Science Data Repository. *npj Microgravity* 2024. doi:10.1038/s41526-024-00393-5
+13. Lin G, Li JY, Kalani K, Truong KN, Mariakakis A. A longitudinal dataset of physiological, hormonal, metabolic, and self-reported menstrual health data (mcPHASES). *Scientific Data* 2026;13(1):411.
+14. Castro-Wallace SL, Chiu CY, John KK, et al. Nanopore DNA sequencing and genome assembly on the International Space Station. *Scientific Reports* 2017;7(1):18022. doi:10.1038/s41598-017-18364-0
+15. Oxford Nanopore Technologies / UC Santa Cruz. *International Space Station update: direct RNA sequencing in space.* August 2018. https://nanoporetech.com/news/news-international-space-station-update-direct-rna-sequencing-space — press announcement, not peer-reviewed.
