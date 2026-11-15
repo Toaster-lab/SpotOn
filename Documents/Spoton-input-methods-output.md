@@ -1,7 +1,7 @@
 # SpotOn — Input, Methods, Output
 
 **Anomaly detection in women's health from menstrual-blood transcriptomics.**
-A reference built on open Earth data, designed to be adapted to a crew of two.
+A reference built on open Earth data, designed to be adapted to a small female crew.
 
 NASA Space Apps · Lucerne 2026 · github.com/Toaster-lab/SpotOn
 
