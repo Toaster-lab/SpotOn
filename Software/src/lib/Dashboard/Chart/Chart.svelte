@@ -5,17 +5,10 @@
         Chart as ChartJS, LineController, LineElement, PointElement,
         CategoryScale, LinearScale, Tooltip,
     } from "chart.js";
-    import { sampleGraphs, type GraphData } from "./graphData";
-
     ChartJS.register(LineController, LineElement, PointElement, CategoryScale, LinearScale, Tooltip);
 
-    let { graphs = sampleGraphs, dataSourceLabel = "Sample data" }: {
-        graphs?: GraphData[];
-        dataSourceLabel?: string;
-    } = $props();
-
-    let hasReadings = $derived($entries.some(entry => Object.keys(entry.readings).length > 0));
-    let displayedGraphs = $derived(hasReadings ? entryGraphs($entries) : graphs);
+    let displayedGraphs = $derived(entryGraphs($entries));
+    let dataSourceLabel = $derived($entries.some(entry => !entry.isSample) ? "Your entries" : $entries.length ? "Sample entries" : "No entries");
     let selectedId = $state("");
     let selected = $derived(displayedGraphs.find((graph) => graph.id === selectedId) ?? displayedGraphs[0]);
     let canvas = $state<HTMLCanvasElement>();
@@ -88,7 +81,7 @@
 <div class="container">
     <header>
         <h2>Collected data</h2>
-        <span class="source">{hasReadings ? "Your entries" : dataSourceLabel}</span>
+        <span class="source">{dataSourceLabel}</span>
     </header>
     <div class="graph-switcher" role="group" aria-label="Select data to display">
         {#each displayedGraphs as graph (graph.id)}

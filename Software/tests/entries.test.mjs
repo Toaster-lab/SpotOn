@@ -19,8 +19,8 @@ function compile(path, dependencies = {}, globals = {}) {
     return module.exports;
 }
 const graphData = compile('../src/lib/Dashboard/Chart/graphData.ts');
-function setup() {
-    let stored = null;
+function setup(initial = '[]') {
+    let stored = initial;
     const storage = {
         getItem: () => stored,
         setItem: (_key, value) => { stored = value; },
@@ -224,4 +224,49 @@ test('edited cells persist, update graph data, and preserve saved data on write 
     storage.setItem = () => { throw new Error('Storage full'); };
     assert.throws(() => api.updateEntry(api.editEntryField(stores.get(api.entries)[0], 'notes', 'Unsaved')));
     assert.equal(stores.get(api.entries)[0].notes, '');
+});
+
+test('first use seeds persisted sample entries without replacing existing or intentionally cleared entries', () => {
+    const { api } = setup(null);
+    api.loadEntries();
+    const samples = stores.get(api.entries);
+    assert.equal(samples.length, 8);
+    assert.ok(samples.every(entry => entry.isSample && api.validateEntry(entry)));
+    assert.equal(api.entryGraphs(samples)[0].points[0].value, samples[0].readings['t-cells']);
+    api.entries.set([]);
+    api.loadEntries();
+    assert.equal(stores.get(api.entries).length, 8);
+    api.deleteEntries(samples.map(entry => entry.id));
+    api.loadEntries();
+    assert.equal(stores.get(api.entries).length, 0);
+    assert.equal(api.entryGraphs(stores.get(api.entries))[0].points.length, 0);
+    const existing = setup(JSON.stringify([entry()]));
+    existing.api.loadEntries();
+    assert.equal(stores.get(existing.api.entries).length, 1);
+    assert.equal(stores.get(existing.api.entries)[0].id, 'one');
+});
+test('uploaded entries drive graphs without mixing samples, including after reload and edits', () => {
+    const { api } = setup(null);
+    api.loadEntries();
+    const uploaded = csv.prepareImport(csv.parseCsv('Date,T-Cells,B-Cells,Notes\n2026-11-14,1500,250,Uploaded\n2026-11-15,1520,,Partial', ','), { date: 0, 't-cells': 1, 'b-cells': 2, notes: 3 }, true);
+    assert.equal(uploaded.errors.length, 0);
+    api.saveEntries(uploaded.entries.map((entry, index) => ({ ...entry, id: `upload-${index}` })));
+    api.entries.set([]);
+    api.loadEntries();
+    const graphs = api.entryGraphs(stores.get(api.entries));
+    assert.equal(graphs[0].points.length, 2);
+    assert.equal(graphs[0].points[0].value, 1500);
+    assert.equal(graphs[0].points[1].value, 1520);
+    assert.equal(graphs[1].points[1].value, null);
+    assert.equal(graphs[2].points.every(point => point.value === null), true);
+    const edited = api.editEntryField(stores.get(api.entries)[0], 't-cells', '1300');
+    assert.equal(edited.isSample, false);
+});
+test('notes-only saved entries do not cause sample graphs to reappear', () => {
+    const { api } = setup(null);
+    api.loadEntries();
+    api.saveEntry(entry({ readings: {}, notes: 'No readings today' }));
+    const graphs = api.entryGraphs(stores.get(api.entries));
+    assert.equal(graphs[0].points.length, 1);
+    assert.ok(graphs.every(graph => graph.points.every(point => point.value === null)));
 });

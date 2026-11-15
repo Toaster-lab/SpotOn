@@ -2,9 +2,22 @@ import { writable } from "svelte/store";
 import { sampleGraphs, type GraphData } from "../Dashboard/Chart/graphData";
 
 export const metrics = sampleGraphs.map(({ id, label, unit }) => ({ id, label, unit }));
-export interface Entry { id: string; date: string; readings: Record<string, number>; notes: string }
+export interface Entry { id: string; date: string; readings: Record<string, number>; notes: string; isSample?: boolean }
 const storageKey = "spoton.entries.v1";
 export const entries = writable<Entry[]>([]);
+
+export function createSampleEntries(): Entry[] {
+    return sampleGraphs[0].points.map((_, index) => ({
+        id: `sample-entry-${index + 1}`,
+        date: `2026-11-${String(index + 8).padStart(2, "0")}`,
+        readings: Object.fromEntries(sampleGraphs.flatMap(graph => {
+            const value = graph.points[index]?.value;
+            return value === null || value === undefined ? [] : [[graph.id, value]];
+        })),
+        notes: "Sample entry - illustrative blood cell readings.",
+        isSample: true,
+    }));
+}
 
 export function validDate(value: string): boolean {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || value.startsWith("0000")) return false;
@@ -15,13 +28,20 @@ export function validateEntry(value: unknown): value is Entry {
     if (!value || typeof value !== "object") return false;
     const entry = value as Entry;
     return typeof entry.id === "string" && typeof entry.date === "string" && validDate(entry.date)
+        && (entry.isSample === undefined || typeof entry.isSample === "boolean")
         && typeof entry.notes === "string" && !!entry.readings && typeof entry.readings === "object" && !Array.isArray(entry.readings)
         && Object.entries(entry.readings).every(([id, amount]) => metrics.some(metric => metric.id === id) && typeof amount === "number" && Number.isFinite(amount) && amount >= 0)
         && (Object.keys(entry.readings).length > 0 || entry.notes.trim().length > 0);
 }
 export function loadEntries() {
     const stored = localStorage.getItem(storageKey);
-    const parsed: unknown = stored === null ? [] : JSON.parse(stored);
+    if (stored === null) {
+        const samples = createSampleEntries();
+        localStorage.setItem(storageKey, JSON.stringify(samples));
+        entries.set(samples);
+        return;
+    }
+    const parsed: unknown = JSON.parse(stored);
     if (!Array.isArray(parsed) || !parsed.every(validateEntry)) throw new Error("Invalid stored entries");
     entries.set(parsed);
 }
@@ -38,7 +58,9 @@ export function saveEntries(batch: Entry[]) {
     });
 }
 export function entryGraphs(saved: Entry[]): GraphData[] {
-    const sorted = [...saved].sort((a, b) => a.date.localeCompare(b.date));
+    const userEntries = saved.filter(entry => !entry.isSample);
+    const graphEntries = userEntries.length ? userEntries : saved;
+    const sorted = [...graphEntries].sort((a, b) => a.date.localeCompare(b.date));
     return metrics.map(metric => ({ ...metric, points: sorted.map(entry => ({ label: entry.date, value: entry.readings[metric.id] ?? null })) }));
 }
 
@@ -52,7 +74,7 @@ export function deleteEntries(ids: string[]) {
 }
 
 export function editEntryField(entry: Entry, field: string, value: string): Entry {
-    const next = { ...entry, readings: { ...entry.readings } };
+    const next = { ...entry, readings: { ...entry.readings }, isSample: false };
     if (field === "date") {
         if (!validDate(value)) throw new Error("Choose a valid date. Date is required.");
         next.date = value;
