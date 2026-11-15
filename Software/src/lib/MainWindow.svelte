@@ -19,7 +19,7 @@
         min-width: 0;
         min-height: calc(100vh - 72px);
         overflow: hidden;
-        border-top-left-radius: 28px;
+        /* border-top-left-radius: 28px; */
         background-color: var(--color-background);
     }
 
@@ -41,7 +41,7 @@
 
     @media (max-width: 600px) {
         .container {
-            border-top-left-radius: 20px;
+            /* border-top-left-radius: 20px; */
         }
 
         .widgets-container {

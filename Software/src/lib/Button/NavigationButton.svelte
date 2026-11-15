@@ -46,7 +46,7 @@
         gap: 12px;
 
         border: 0;
-        border-radius: 8px;
+        /* border-radius: 8px; */
 
         color: var(--color-text-secondary);
 

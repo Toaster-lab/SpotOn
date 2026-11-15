@@ -1,9 +1,21 @@
 <script lang="ts">
     import SeverityBar from "./SeverityBar.svelte";
     import TextField from "../../Input/TextField.svelte";
+    import HealthChat from "./HealthChat.svelte";
     import AiText from "./AiText.svelte";
     import { Brain } from "@lucide/svelte";
     let { score = 3.2 }: { score?: number } = $props();
+    let chatOpen = $state(false);
+    let question = $state("");
+    let initialQuestion = $state("");
+
+    function openChat(event: SubmitEvent) {
+        event.preventDefault();
+        initialQuestion = question.trim();
+        question = "";
+        chatOpen = true;
+    }
+
     const statuses = ["optimal", "low", "moderate", "high", "severe"] as const;
     let normalizedScore = $derived(
         Number.isFinite(score) ? Math.min(5, Math.max(1, score)) : 1,
@@ -21,10 +33,14 @@
             <span class="overview-icon" aria-hidden="true"><Brain size={20} strokeWidth={2} /></span>
             <span>AI Overview</span>
         </h3>
-        <AiText />
-        <TextField />
+        <AiText {status} />
     </div>
+    <form class="chat-launcher" onsubmit={openChat}>
+        <TextField title="Ask about your health" placeholder="Ask about your blood markers… Press Enter" bind:value={question} />
+    </form>
 </div>
+
+<HealthChat bind:open={chatOpen} {initialQuestion} {status} />
 
 <style>
     #risk-report-container {
@@ -35,9 +51,11 @@
         overflow-wrap: anywhere;
         margin: 0;
         padding: 24px;
-        border-radius: 20px;
+        /* border-radius: 20px; */
         background: var(--color-surface);
     }
+
+    .chat-launcher { margin-top: auto; padding-top: 24px; display: grid; gap: 12px; }
 
     .status {
         margin: 4px 0 20px;
@@ -58,7 +76,7 @@
         min-width: 0;
         margin-top: 24px;
         padding: 16px;
-        border-radius: 12px;
+        /* border-radius: 12px; */
         background-color: var(--color-primary-hover);
     }
 

@@ -4,8 +4,8 @@
 
     let { activeTab = $bindable("main") }: { activeTab?: "main" | "second" } = $props();
     const tabs = [
-        { id: "main", label: "Main Window" },
-        { id: "second", label: "Second Window" },
+        { id: "main", label: "Dashboard" },
+        { id: "second", label: "Entries" },
     ] as const;
 
     function handleTabKey(event: KeyboardEvent, index: number) {
@@ -51,7 +51,7 @@
 </script>
 
 <header class="topbar">
-    <div class="logo-placeholder" aria-label="Logo placeholder">Logo</div>
+    <div class="wordmark" aria-label="spot on">spot on</div>
     <div class="tabs" role="tablist" aria-label="Dashboard windows">
         {#each tabs as tab, index}
             <button
@@ -84,23 +84,21 @@
 <style>
     .topbar {
         min-height: 72px;
-        display: flex;
+        display: grid;
+        grid-template-columns: var(--sidebar-width) minmax(0, 1fr) 69px;
         align-items: center;
-        gap: 24px;
-        padding: 12px 25px;
+        padding: 12px 0;
         background: var(--color-surface);
     }
 
-    .logo-placeholder {
-        display: grid;
-        flex-shrink: 0;
-        width: 110px;
-        height: 40px;
-        place-items: center;
-        border: 1px dashed var(--color-outline);
-        border-radius: 6px;
-        color: var(--color-text-secondary);
-        font-size: 14px;
+    .wordmark {
+        margin-left: 25px;
+        color: var(--color-text);
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -1px;
+        line-height: 40px;
+        white-space: nowrap;
     }
     .tabs {
         display: flex;
@@ -135,13 +133,14 @@
         outline-offset: -4px;
     }
 
-    @media (max-width: 600px) {
-        .topbar { flex-wrap: wrap; gap: 12px; }
-        .tabs { order: 3; width: 100%; }
+    @media (max-width: 900px) {
+        .topbar { grid-template-columns: minmax(0, 1fr) 69px; row-gap: 12px; }
+        .tabs { grid-column: 1 / -1; grid-row: 2; }
+        .theme-toggle { grid-column: 2; grid-row: 1; }
     }
 
     .theme-toggle {
-        margin-left: auto;
+        margin-right: 25px;
         flex-shrink: 0;
         display: grid;
         place-items: center;
@@ -149,7 +148,7 @@
         height: 44px;
         padding: 0;
         border: 0;
-        border-radius: 50%;
+        /* border-radius: 50%; */
         background: transparent;
         color: var(--color-text);
         cursor: pointer;

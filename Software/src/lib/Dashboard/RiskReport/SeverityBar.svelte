@@ -29,7 +29,7 @@
 
     .stage {
         flex: 1;
-        border-radius: 5px;
+        /* border-radius: 5px; */
     }
 
     .optimal {
@@ -59,7 +59,7 @@
         height: 26px;
         background: var(--color-text);
         border: 2px solid var(--color-surface);
-        border-radius: 4px;
+        /* border-radius: 4px; */
         transform: translate(-50%, -50%);
         box-sizing: border-box;
     }

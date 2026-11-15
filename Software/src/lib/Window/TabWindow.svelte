@@ -5,7 +5,7 @@
 </script>
 
 <div class="tab-window">
-    <h2>{title}</h2>
+    {#if title}<h2>{title}</h2>{/if}
     {@render children?.()}
 </div>
 
@@ -14,7 +14,7 @@
         min-width: 0;
         min-height: calc(100vh - 72px);
         padding: 24px;
-        border-top-left-radius: 28px;
+        /* border-top-left-radius: 28px; */
         background: var(--color-background);
         color: var(--color-text);
         overflow-wrap: anywhere;
@@ -23,6 +23,6 @@
     h2 { margin: 0 0 24px; }
 
     @media (max-width: 600px) {
-        .tab-window { padding: 16px; border-top-left-radius: 20px; }
+        .tab-window { padding: 16px; /* border-top-left-radius: 20px; */ }
     }
 </style>

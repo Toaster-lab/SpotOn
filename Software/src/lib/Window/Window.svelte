@@ -75,7 +75,7 @@
         margin: auto;
         padding: 0;
         border: 0;
-        border-radius: 20px;
+        /* border-radius: 20px; */
         background: var(--color-surface);
         color: var(--color-text);
         box-shadow: 0 16px 48px rgb(0 0 0 / 28%);
@@ -120,7 +120,7 @@
         height: 40px;
         padding: 0;
         border: 0;
-        border-radius: 50%;
+        /* border-radius: 50%; */
         background: transparent;
         color: var(--color-text-secondary);
         cursor: pointer;

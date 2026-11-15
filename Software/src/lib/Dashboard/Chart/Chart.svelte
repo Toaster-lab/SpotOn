@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { entries, entryGraphs } from "../../Entries/entries";
     import { onMount } from "svelte";
     import {
         Chart as ChartJS, LineController, LineElement, PointElement,
@@ -13,8 +14,10 @@
         dataSourceLabel?: string;
     } = $props();
 
+    let hasReadings = $derived($entries.some(entry => Object.keys(entry.readings).length > 0));
+    let displayedGraphs = $derived(hasReadings ? entryGraphs($entries) : graphs);
     let selectedId = $state("");
-    let selected = $derived(graphs.find((graph) => graph.id === selectedId) ?? graphs[0]);
+    let selected = $derived(displayedGraphs.find((graph) => graph.id === selectedId) ?? displayedGraphs[0]);
     let canvas = $state<HTMLCanvasElement>();
     let themeRevision = $state(0);
 
@@ -46,7 +49,8 @@
                     pointRadius: 3,
                     pointHoverRadius: 5,
                     tension: 0.25,
-                    spanGaps: false,
+                    // Connect recorded readings across entries where this metric was left blank.
+                    spanGaps: true,
                 }],
             },
             options: {
@@ -84,16 +88,16 @@
 <div class="container">
     <header>
         <h2>Collected data</h2>
-        <span class="source">{dataSourceLabel}</span>
+        <span class="source">{hasReadings ? "Your entries" : dataSourceLabel}</span>
     </header>
     <div class="graph-switcher" role="group" aria-label="Select data to display">
-        {#each graphs as graph (graph.id)}
+        {#each displayedGraphs as graph (graph.id)}
             <button type="button" aria-pressed={selected?.id === graph.id} onclick={() => selectedId = graph.id}>
                 {graph.label}
             </button>
         {/each}
     </div>
-    {#if selected?.points.length}
+    {#if selected?.points.some(point => point.value !== null)}
         <h3>{selected.label} <span>({selected.unit})</span></h3>
         <div class="plot" role="img" aria-label={`${selected.label} line chart, in ${selected.unit}. Values are available in the data table below.`}>
             <canvas bind:this={canvas} aria-hidden="true"></canvas>
@@ -102,7 +106,7 @@
             <summary>View data table</summary>
             <div class="table-scroll">
                 <table>
-                    <thead><tr><th scope="col">Time</th><th scope="col">{selected.label} ({selected.unit})</th></tr></thead>
+                    <thead><tr><th scope="col">Date / time</th><th scope="col">{selected.label} ({selected.unit})</th></tr></thead>
                     <tbody>
                         {#each selected.points as point}
                             <tr><th scope="row">{point.label}</th><td>{point.value ?? "—"}</td></tr>
@@ -122,7 +126,7 @@
         width: 100%;
         background: var(--color-surface);
         padding: 24px;
-        border-radius: 20px;
+        /* border-radius: 20px; */
     }
     header { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
     h2 { margin: 0; }
@@ -131,7 +135,7 @@
     button {
         padding: 8px 12px;
         border: 1px solid var(--color-divider);
-        border-radius: 8px;
+        /* border-radius: 8px; */
         background: transparent;
         color: var(--color-text-secondary);
         font-size: 0.875rem;

@@ -40,7 +40,7 @@
         min-width: 0;
         padding: 0.85em;
         border: 1px solid var(--color-outline);
-        border-radius: 0.75em;
+        /* border-radius: 0.75em; */
         background: var(--color-surface);
         color: var(--color-text);
         font: inherit;
